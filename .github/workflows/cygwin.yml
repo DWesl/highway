@@ -1,0 +1,39 @@
+name: Cygwin
+on: ["push"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  cygwin_build_test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          submodules: recursive
+          fetch-tags: true
+      - name: Install Cygwin
+        uses: egor-tensin/setup-cygwin@d2c752bab416d4b0662591bd366fc2686297c82d # v4
+        with:
+          platform: x86_64
+          install-dir: 'C:\tools\cygwin'
+          packages: >-
+            gcc-core gcc-g++ git dash cmake ninja make
+      - name: Set Windows PATH
+        uses: egor-tensin/cleanup-path@f04bc953e6823bf491cc0bdcff959c630db1b458 # v4.0.1
+        with:
+          dirs: 'C:\tools\cygwin\bin;C:\tools\cygwin\lib\lapack'
+      - name: "Tell Cygwin's git about this repository."
+        run: |
+          dash -c "which git; /usr/bin/git config --system --add safe.directory /cygdrive/d/a/google/highway"
+      - name: "Configure build dir"
+        run: |
+          dash -c "mkdir build && cd build && /usr/bin/cmake .."
+      - name: "Build highway"
+        run: "dash -c 'cd build && make'"
+      - name: "Run tests"
+        run: "dash -c 'cd build && make test'"
