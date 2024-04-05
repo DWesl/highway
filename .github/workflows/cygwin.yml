@@ -32,8 +32,8 @@ jobs:
           dash -c "which git; /usr/bin/git config --system --add safe.directory /cygdrive/d/a/google/highway"
       - name: "Configure build dir"
         run: |
-          dash -c "mkdir build && cd build && /usr/bin/cmake .."
+          dash -c "mkdir -p build-cygwin-cmake && cd build-cygwin-cmake && /usr/bin/cmake .."
       - name: "Build highway"
-        run: "dash -c 'cd build && make'"
+        run: "dash -c 'cd build-cygwin-cmake && make'"
       - name: "Run tests"
-        run: "dash -c 'cd build && make test'"
+        run: "dash -c 'cd build-cygwin-cmake && make test'"
