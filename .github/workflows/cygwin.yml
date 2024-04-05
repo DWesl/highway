@@ -1,6 +1,10 @@
 name: Cygwin
 on: ["push"]
 
+env:
+  CPPFLAGS: "-D_POSIX_C_SOURCE=200809L"
+  CPPCXXFLAGS: "-D_POSIX_C_SOURCE=200809L"
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
